@@ -19,202 +19,156 @@ hello <- function() {
 
 
 LinearRegression <- function() {
-  ######  import cars data set  ######
+  paste("######  import cars data set  ######")
   data(cars)
   names(cars)
-
-  ###### Visualize the relationship between the two variables and find the correlation coefficient ######
-  plot(cars$speed,cars$dist,xlab = "Speed",ylab = "Distance")
-  cor(cars$speed,cars$dist)
-
-  #####  Fit a meaningful linear regression model and assess the adequacy of the fitted model.  #####
-  model<-lm(dist~speed,data=cars)
+  
+  paste("###### Visualize the relationship between the two variables and find the correlation coefficient ######")
+  plot(cars$speed, cars$dist, xlab = "Speed", ylab = "Distance")
+  cor(cars$speed, cars$dist)
+  
+  paste("#####  Fit a meaningful linear regression model and assess the adequacy of the fitted model.  #####")
+  model <- lm(dist ~ speed, data = cars)
   summary(model)
-
-
-  #####  Residual analysis  ######
-  SR<-rstandard(model)
-  #####  Standardized residuals vs fitted values  #######
-  plot(model$fitted.values,SR,xlab = "Fitted values",ylab = "Standardized residuals")
-  abline(h=0, col = "red")
-
-  ##### Check normality of residuals
-  qqnorm(SR,ylab = "Standardized Residuals of Model")
-  qqline(SR,col = "red")
+  
+  paste("#####  Residual analysis  ######")
+  SR <- rstandard(model)
+  paste("#####  Standardized residuals vs fitted values  #######")
+  plot(model$fitted.values, SR, xlab = "Fitted values", ylab = "Standardized residuals")
+  abline(h = 0, col = "red")
+  
+  paste("##### Check normality of residuals")
+  qqnorm(SR, ylab = "Standardized Residuals of Model")
+  qqline(SR, col = "red")
   shapiro.test(SR)
-  hist(SR, col = 2,probability = T)
-  ###### Check outliers based on standardized residuals
-  which(SR>3 | SR<(-3)) # no outlier
-  ###### Goodness of fit
-  R2<-summary(model)$r.squared
-
+  hist(SR, col = 2, probability = TRUE)
+  paste("###### Check outliers based on standardized residuals")
+  which(SR > 3 | SR < (-3)) # no outlier
+  paste("###### Goodness of fit")
+  R2 <- summary(model)$r.squared
 }
 
-
-
-
-
-
-ContigencyTables_01  <- function(){
-
+ContigencyTables_01 <- function() {
   library(epitools)
   data(wcgs)
   attach(wcgs)
-
-  ## Construct a contingency table for behavior pattern type and CHD occurrence.
-  tab=table(dibpat0,chd69)
-
-  ## Estimate the ‘risk ratio’ and the ‘odds ratio’ considering behavior pattern type B as the reference level.
-  riskratio(tab)
+  
+  paste("## Construct a contingency table for behavior pattern type and CHD occurrence.")
+  tab = table(dibpat0, chd69)
+  
+  paste("## Estimate the ‘risk ratio’ and the ‘odds ratio’ considering behavior pattern type B as the reference level.")
+  riskratio(tab) 
   riskratio(tab)$measure #2.2191
-  oddsratio(tab)
-  oddsratio(tab)$measure #2.3697
-
-
-  ## Conduct a suitable statistical test to check the independence of the two variables
+  oddsratio(tab) 
+  oddsratio(tab)$measure #2.3697 
+  
+  paste("## Conduct a suitable statistical test to check the independence of the two variables")
   expected(tab)
   chisq.test(tab)
-  #p-value =4.069e-10<0.05
+  #p-value =4.069e-10<0.05 
   #reject H0
   #There is a relationship b/w 2 variables
-
-
-
 }
 
-
-ContigencyTables_02  <- function(file_path){
-  # age group - Age of the person. Levels: under 50, 50 +.
-  # vaccine status - Vaccination status of the person. Levels: vaccinated, unvaccinated
-  # outcome - Did the person die from the Delta variant? Levels: death and survived.
-
-
-  # Load the dataset into R.
-  # Construct a 2 × 2 table to summarize the variables vaccine status and outcome.
-  covid<-read.csv(file_path)
-  covid$outcome<-as.factor(covid$outcome)
-  covid$outcome<-relevel(covid$outcome,ref = "survived")
-  tab2<-table(covid$vaccine_status,covid$outcome)
-
-  # Calculate the ‘risk ratio’ to quantify the association between vaccine status and outcome.
-  riskratio(tab2)$measure
-
-  # Re-calculate the risk ratios in subgroups defined by the age group and comment on your findings.
-  u50<-covid[covid$age_group=="under 50",]
-  o50<-covid[covid$age_group=="50 +",]
-  #Risk ratio for under 50 group
-  tab_u50<-table(u50$vaccine_status,u50$outcome)
+ContigencyTables_02 <- function(file_path) {
+  paste("# age group - Age of the person. Levels: under 50, 50 +.")
+  paste("# vaccine status - Vaccination status of the person. Levels: vaccinated, unvaccinated")
+  paste("# outcome - Did the person die from the Delta variant? Levels: death and survived.")    
+  
+  paste("# Load the dataset into R.")
+  paste("# Construct a 2 × 2 table to summarize the variables vaccine status and outcome.")
+  covid <- read.csv(file_path)
+  covid$outcome <- as.factor(covid$outcome)
+  covid$outcome <- relevel(covid$outcome, ref = "survived")                                             
+  tab2 <- table(covid$vaccine_status, covid$outcome)
+  
+  paste("# Calculate the ‘risk ratio’ to quantify the association between vaccine status and outcome.")
+  riskratio(tab2)$measure                                            
+  
+  paste("# Re-calculate the risk ratios in subgroups defined by the age group and comment on your findings.")  
+  u50 <- covid[covid$age_group == "under 50", ]
+  o50 <- covid[covid$age_group == "50 +", ]
+  paste("#Risk ratio for under 50 group")
+  tab_u50 <- table(u50$vaccine_status, u50$outcome)
   tab_u50
   riskratio(tab_u50)$measure #0.7191
-  #Risk ratio for 50+ group
-  tab_o50<-table(o50$vaccine_status,o50$outcome)
+  paste("#Risk ratio for 50+ group")
+  tab_o50 <- table(o50$vaccine_status, o50$outcome)
   tab_o50
   riskratio(tab_o50)$measure #0.2827
-  #Although the overall risk ratio, which is larger than 1, indicates that vaccination increases
-  #the risk of death, once we consider the two subgroups separately it shows that vaccination
-  #reduces the risk of death. This phenomenon is called the "Simpson's Paradox" or "Yule–Simpson effect".
-
+  paste("#Although the overall risk ratio, which is larger than 1, indicates that vaccination increases")
+  paste("#the risk of death, once we consider the two subgroups separately it shows that vaccination")
+  paste("#reduces the risk of death. This phenomenon is called the \"Simpson's Paradox\" or \"Yule–Simpson effect\".")                                  
 }
 
-CRE_01<- function(){
-
-  ## Consider a completely randomized experiment (CRE) with a binary treatment A where n = 5 and n1 = 3.
-  ##  How many different treatment assignment mechanisms are possible?
-  choose(5,3)
-
-  ## Write an R function to generate all possible treatment assignment mechanisms for any given n and n1.
-  #  (Hint: Use the functions choose and combn)
-  trtassignment<- function(n,n1) {
-    M<-choose(n,n1)
-    treat.index<-combn(n,n1)
-    A<-matrix(0,n,M)
+CRE_01 <- function() {
+  paste("## Consider a completely randomized experiment (CRE) with a binary treatment A where n = 5 and n1 = 3.")
+  paste("## How many different treatment assignment mechanisms are possible?")
+  choose(5, 3)
+  
+  paste("## Write an R function to generate all possible treatment assignment mechanisms for any given n and n1.")
+  paste("#  (Hint: Use the functions choose and combn)")
+  trtassignment <- function(n, n1) {
+    M <- choose(n, n1)
+    treat.index <- combn(n, n1)
+    A <- matrix(0, n, M)
     for (i in 1:M) {
-      treat<-treat.index[,i]
-      A[treat,i]<-1
+      treat <- treat.index[, i]
+      A[treat, i] <- 1
     }
     A
   }
-
-  ## Find all the possible treatment assignment mechanisms for a CRE with n = 5 and n1 = 3.
-  trtassignment(5,3)
-
-
-
-
+  
+  paste("## Find all the possible treatment assignment mechanisms for a CRE with n = 5 and n1 = 3.")
+  trtassignment(5, 3)
 }
 
-
-
-
-CRE_02 <- function(file_path){
-
-  ## Angrist et al. (2009) conducted an experiment to evaluate different strategies to improve academic
-  ## performance among college freshmen in a Canadian university. The data is available in the file
-  ## “star.dta”. The outcome is the GPA at the end of the first year. We will focus on two covariates:
-  ## gender (encoded by female) and baseline GPA(encoded by gpa0).
-
-
-  ## Extract a subset of the dataset which only contains records for the control group (encoded
-  ## by the variable control) and the treatment group which was offered academic support services
-  ## and financial incentives for good grades (encoded by the variable sfsp).
+CRE_02 <- function(file_path) {
+  paste("## Angrist et al. (2009) conducted an experiment to evaluate different strategies to improve academic")
+  paste("## performance among college freshmen in a Canadian university. The data is available in the file")
+  paste("## “star.dta”. The outcome is the GPA at the end of the first year. We will focus on two covariates:")
+  paste("## gender (encoded by female) and baseline GPA(encoded by gpa0).")
+  
+  paste("## Extract a subset of the dataset which only contains records for the control group (encoded")
+  paste("## by the variable control) and the treatment group which was offered academic support services")
+  paste("## and financial incentives for good grades (encoded by the variable sfsp).")
   library("foreign")
-  angrist   = read.dta(file_path)
-  table(angrist$control,angrist$sfsp)
-  data<-subset(angrist,control == 1|sfsp == 1)
+  angrist = read.dta(file_path)
+  table(angrist$control, angrist$sfsp)
+  data <- subset(angrist, control == 1 | sfsp == 1)
   str(data)
-
-
-  ## Impute the missing outcomes with the observed average.
-  y<-data$GPA_year1
-  #Find the mean of y without missing values
-  meany<-mean(y,na.rm = T)
-  #Impute the mean of y to missing values
-  y<-ifelse(is.na(y),meany,y)
+  
+  paste("## Impute the missing outcomes with the observed average.")
+  y <- data$GPA_year1
+  meany <- mean(y, na.rm = TRUE)
+  y <- ifelse(is.na(y), meany, y)
   mean(y)
-
-
-  ## Check the balance of the two covariates. (Hint: For each covariate, conduct a suitable twosample test to compare the covariate means or proportions
-  ## in the control and treatmentgroups)
-  a<-data$sfsp
-  #Assessing balance involves assessing whether the distributions of covariates are similar
-  #between the treated and control groups.
-  #Check the balance w.r.t. gender
-  #Since the variable 'female' is binary we use prop.test to test for proportion difference
-  addmargins(table(data$female,a),c(1,2))
-  prop.test(x=c(574,82),n=c(1006,150),correct = F)
-  #There is no significant difference in proportions
-
-  #Check the balance w.r.t. baseline GPA
-  gpa0a0<-data$gpa0[a==0]
-  gpa0a1<-data$gpa0[a==1]
-  var.test(gpa0a1,gpa0a0)
-  t.test(gpa0a1,gpa0a0,var.equal = T)
-
-
-  ## Estimate the ATE without adjusting for covariates. (Hint: The unadjusted estimator is
-  ## numerically identical to the difference-in-means of the outcome)
-  #Difference in means estimator
-  mean(y[a==1])-mean(y[a==0])
-  #OLS fit estimator
-  fit<-lm(y~a)
+  
+  paste("## Check the balance of the two covariates. (Hint: For each covariate, conduct a suitable two-sample test to compare the covariate means or proportions")
+  paste("## in the control and treatment groups)")
+  a <- data$sfsp
+  addmargins(table(data$female, a), c(1, 2))
+  prop.test(x = c(574, 82), n = c(1006, 150), correct = FALSE)
+  
+  gpa0a0 <- data$gpa0[a == 0]
+  gpa0a1 <- data$gpa0[a == 1]
+  var.test(gpa0a1, gpa0a0)
+  t.test(gpa0a1, gpa0a0, var.equal = TRUE)
+  
+  paste("## Estimate the ATE without adjusting for covariates. (Hint: The unadjusted estimator is")
+  paste("## numerically identical to the difference-in-means of the outcome)")
+  mean(y[a == 1]) - mean(y[a == 0])
+  fit <- lm(y ~ a)
   summary(fit)
-  ate_unadj<-coef(fit)[2] #0.0518
-
-
-  ## Estimate the ATE adjusted for the covariates.
-  #Covariate adjustment using regression
-  x<-data[,c("female","gpa0")]
-  x<-scale(x)
-  fitadj<-lm(y~a*x)
+  ate_unadj <- coef(fit)[2] #0.0518
+  
+  paste("## Estimate the ATE adjusted for the covariates.")
+  x <- data[, c("female", "gpa0")]
+  x <- scale(x)
+  fitadj <- lm(y ~ a * x)
   summary(fitadj)
-  ate_adj<-coef(fitadj)[2] #0.0682
-
-
+  ate_adj <- coef(fitadj)[2] #0.0682
 }
-
-
-
-
 
 
 
